@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css"
+        integrity="sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
+        integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"
+        integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js"
+        integrity="sha512-1/RvZTcCDEUjY/CypiMz+iqqtaoQfAITmNSJY17Myp4Ms5mdxPS5UV7iOfdZoxcGhzFbOm6sntTKJppjvuhg4g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <title>PunchPad - Team Attendance</title>
+</head>
+
+<body>
+    <header id="nav-bar"></header>
+    <div class="container mt-5">
+
+        <div class="Date-Form" id="date-picker-form">
+            <input type="text" name="keyword" id="keyword" class="date-picker" placeholder="Search by Name">
+            <input type="date" id="date-picker" name="date" class="date-picker" />
+            <input type="button" class="btn btn-primary date-search" id="SearchButton" value="Search Attendance" />
+        </div>
+
+        <div class="card table-card">
+            <div class="card-body">
+                <span class="text-center mb-1 search-results"></span>
+                <table class="table ">
+                    <thead class="btn-color">
+                        <tr>
+
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Punch Time
+                            </th>
+                            <th>
+                                Type
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+                <h6 class="text-center mt-5 no-results"></h6>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script>
+
+        $(document).ready(function () {
+            $("#nav-bar").load("Navbar.html");
+            if (localStorage.getItem("userId") == null) {
+                window.location.href = "Login.html";
+            }
+            var date = new Date().toISOString().substr(0, 10);
+            $("#date-picker").val(date);
+            GetAttendance(date);
+        })
+        function GetAttendance(date, keyword = null) {
+            var userId = localStorage.getItem("userId");
+            $("table tbody").html("");
+            $(".card-body .no-results").html("");
+            $(".card-body .search-result").html("");
+            $.ajax({
+                url: `https://localhost:7164/api/Attendance/Team-Attendance/${userId}/${date}?keyword=${keyword}`,
+                type: "get",
+                headers: {
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Method': '*'
+                },
+                contentType: "application/json",
+                success: function (result, status, xhr) {
+                    $.each(result, function (index, value) {
+                        $("tbody").append($("<tr>"));
+                        appendElement = $("tbody tr").last();
+                        appendElement.append($("<td style='display:none'>").html(value["id"]));
+                        appendElement.append($("<td>").html(value["emp"] ? "<a href=" + 'Profile.html?user=' + value['emp']['username'] + ">" + value['emp']['name'] + "</a>" : ""));
+                        appendElement.append($("<td>").html(new Date(value["attendanceTime"]).toLocaleString()));
+                        if (value["attendanceType"] == "In") {
+                            appendElement.append($("<td class='text-success fw-bold'>").html(value["attendanceType"]));
+                        } else {
+                            appendElement.append($("<td class='text-danger fw-bold'>").html(value["attendanceType"]));
+                        }
+                        if (value["attendanceStatus"] == "Approved")
+                            appendElement.append($("<td class='text-success fw-bold'>").html(value["attendanceStatus"]));
+                        else if (value["attendanceStatus"] == "Discarded")
+                            appendElement.append($("<td class='text-danger fw-bold'>").html(value["attendanceStatus"]));
+                        else
+                            appendElement.append($("<td class='text-warning fw-bold'>").html(value["attendanceStatus"]));
+
+                        appendElement.append($("<td>").html("<button class='btn btn-info approve'><i class='fw-bold fa-solid fa-check text-white approve'></i></button> <button class='btn btn-info discard'><i class='fw-bold fa-solid fa-xmark text-white discard'></i></button>"));
+
+                    });
+                    if(result.length==0){
+                        $(".card-body .no-results").html(`No Pending attendance records found for ${date}`);
+                        if(keyword!=null){
+                            $(".card-body .no-results").append(` with keyword ${keyword}`);
+                        }
+                    }
+                    
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr)
+                }
+            });
+        }
+
+        $("#SearchButton").on("click", function () {
+            var date = $("#date-picker").val();
+            var keyword = $("#keyword").val();
+            if (keyword == "") keyword = null;
+            GetAttendance(date, keyword);
+        });
+
+        $("table").on("click", "button.approve", function () {
+            var id = $(this).parents("tr").find("td:nth-child(1)").text();
+            UpdateAttendance(id, "Approved");
+
+        });
+        $("table").on("click", "button.discard", function () {
+            var id = $(this).parents("tr").find("td:nth-child(1)").text();
+            UpdateAttendance(id, "Discarded");
+
+        });
+
+        function UpdateAttendance(id, status) {
+            $.ajax({
+                url: `https://localhost:7164/api/Attendance/${id}/${status}`,
+                type: "put",
+                contentType: "application/json",
+                success: function (result, status, xhr) {
+                    var date = $("#date-picker").val();
+                    GetAttendance(date);
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr)
+                }
+            });
+        }
+
+
+    </script>
+</body>
+
+</html>

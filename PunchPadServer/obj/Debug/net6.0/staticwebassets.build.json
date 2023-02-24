@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "QILxIrLrWybqOCB7frd+J3qBoQubGCp/gWqYOYO14js=",
+  "Source": "PunchPadServer",
+  "BasePath": "_content/PunchPadServer",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

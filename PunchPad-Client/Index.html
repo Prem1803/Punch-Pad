@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css"
+        integrity="sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
+        integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"
+        integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js"
+        integrity="sha512-1/RvZTcCDEUjY/CypiMz+iqqtaoQfAITmNSJY17Myp4Ms5mdxPS5UV7iOfdZoxcGhzFbOm6sntTKJppjvuhg4g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <title>PunchPad </title>
+</head>
+
+<body>
+    <header id="nav-bar"></header>
+
+    <div class="container mt-5">
+
+        <div class="row index-div">
+            <div class="col-md-6">
+                <img src="images/Logo.JPG" alt="logo" width="100%" />
+            </div>
+            <div class="text-center col-sm-12 col-md-6 index-text">
+                <p class="display-4">Welcome to</p>
+                <h5> PunchPad - Employee Attendance Portal</h5>
+                <a class="btn btn-color mt-2 btn-lg" style="display: none;" id="Login-Button"
+                    href="Login.html">Login</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $("#nav-bar").load("Navbar.html");
+        })
+        $(document).ready(function () {
+            if (localStorage.getItem("userId") == null)
+                $("#Login-Button").show();
+
+        })
+
+    </script>
+</body>
+
+</html>
